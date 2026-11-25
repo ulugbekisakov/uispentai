@@ -1,0 +1,2128 @@
+<!DOCTYPE html>
+<html lang="uz" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>IU Spent AI — Ulugbek Isakov</title>
+  <!-- Telegram Mini App SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            obsidian: '#070B09',
+            surface: '#0F1713',
+            surface2: '#15201B'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    * {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    input, textarea, select {
+      user-select: text;
+    }
+    body {
+      background-color: #070B09;
+      color: #F3F4F6;
+      font-family: 'Inter', sans-serif;
+      overscroll-behavior-y: none;
+      /* Extra top padding prevents Telegram's top-left 'X' close button from overlapping header */
+      padding-top: calc(56px + var(--safe-top));
+      padding-bottom: calc(148px + var(--safe-bottom));
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.42), 0 8px 24px rgba(16, 185, 129, 0.35); }
+      50% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0), 0 8px 28px rgba(16, 185, 129, 0.5); }
+    }
+    .mic-glow { animation: pulseGlow 2.4s infinite ease-in-out; }
+
+    @keyframes waveBar {
+      0%, 100% { height: 10px; }
+      50% { height: 34px; }
+    }
+    .wave-bar {
+      width: 4px;
+      background: #10B981;
+      border-radius: 9999px;
+      animation: waveBar 0.85s infinite ease-in-out;
+    }
+    .wave-bar:nth-child(2) { animation-delay: 0.15s; }
+    .wave-bar:nth-child(3) { animation-delay: 0.3s; }
+    .wave-bar:nth-child(4) { animation-delay: 0.45s; }
+    .wave-bar:nth-child(5) { animation-delay: 0.2s; }
+    .wave-bar:nth-child(6) { animation-delay: 0.35s; }
+    .wave-bar:nth-child(7) { animation-delay: 0.1s; }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); opacity: 0.6; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .modal-sheet { animation: slideUp 0.24s cubic-bezier(0.16, 1, 0.3, 1); }
+  </style>
+</head>
+<body class="min-h-screen antialiased selection:bg-emerald-500/30">
+
+  <!-- ==================== TOAST NOTIFICATION ==================== -->
+  <div id="toastBox" class="fixed left-1/2 -translate-x-1/2 z-[120] pointer-events-none opacity-0 transition-all duration-200 max-w-[92vw]" style="top: calc(56px + var(--safe-top));">
+    <div id="toastInner" class="px-4 py-2.5 rounded-2xl bg-[#13221B] border border-emerald-500/35 shadow-2xl flex items-center gap-2 text-xs font-semibold text-white whitespace-nowrap">
+      <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400 shrink-0"></i>
+      <span id="toastText">Saqlandi</span>
+    </div>
+  </div>
+
+  <!-- ==================== LOGIN SCREEN (CLOSED ACCESS, NO SIGN-UP) ==================== -->
+  <div id="loginScreen" class="fixed inset-0 z-[100] bg-[#070B09] overflow-y-auto flex flex-col justify-between px-5 pb-8" style="padding-top: calc(60px + var(--safe-top));">
+    <div class="w-full max-w-sm mx-auto my-auto space-y-6">
+      <!-- Classic Black & White IU Monogram Logo -->
+      <div class="flex flex-col items-center text-center">
+        <div class="w-20 h-20 rounded-3xl bg-black border border-white/25 shadow-2xl flex items-center justify-center mb-4">
+          <svg viewBox="0 0 100 100" class="w-14 h-14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <text x="15" y="65" fill="#FFFFFF" font-family="Georgia, 'Times New Roman', serif" font-weight="bold" font-size="52">I</text>
+            <text x="37" y="65" fill="#FFFFFF" font-family="Georgia, 'Times New Roman', serif" font-weight="bold" font-size="52">U</text>
+            <path d="M20 77 Q50 84 79 71" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round"/>
+            <path d="M74 68 L80 71 L76 77" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h1 class="text-2xl font-extrabold tracking-tight text-white">IU Spent AI</h1>
+        <p class="text-xs text-gray-400 mt-1">Yopiq shaxsiy moliyaviy tizim</p>
+      </div>
+
+      <!-- Login Form Card -->
+      <form onsubmit="handleLoginSubmit(event)" class="rounded-3xl bg-[#0F1713] border border-white/10 p-5 space-y-4 shadow-xl">
+        <div class="flex items-center justify-between border-b border-white/5 pb-3">
+          <span class="text-sm font-bold text-white">Tizimga kirish</span>
+          <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/25 text-[10px] font-semibold text-emerald-400 flex items-center gap-1">
+            <i data-lucide="shield-check" class="w-3 h-3"></i>
+            Himoyalangan
+          </span>
+        </div>
+
+        <!-- Login Input -->
+        <div class="space-y-1.5">
+          <label class="text-xs font-medium text-gray-400 block">Login</label>
+          <div class="relative flex items-center">
+            <i data-lucide="user" class="w-4 h-4 text-gray-500 absolute left-3.5"></i>
+            <input
+              id="loginUsernameInput"
+              type="text"
+              autocomplete="username"
+              autocapitalize="none"
+              placeholder="Login kiriting"
+              class="w-full h-11 pl-10 pr-3.5 rounded-xl bg-[#070B09] border border-white/10 focus:border-emerald-500 text-sm text-white placeholder-gray-600 focus:outline-none transition"
+            />
+          </div>
+        </div>
+
+        <!-- Password Input -->
+        <div class="space-y-1.5">
+          <label class="text-xs font-medium text-gray-400 block">Parol</label>
+          <div class="relative flex items-center">
+            <i data-lucide="lock" class="w-4 h-4 text-gray-500 absolute left-3.5"></i>
+            <input
+              id="loginPasswordInput"
+              type="password"
+              autocomplete="current-password"
+              placeholder="Parol kiriting"
+              class="w-full h-11 pl-10 pr-10 rounded-xl bg-[#070B09] border border-white/10 focus:border-emerald-500 text-sm text-white placeholder-gray-600 focus:outline-none transition"
+            />
+            <button type="button" onclick="togglePasswordVisibility('loginPasswordInput', 'loginEyeIcon')" class="absolute right-3 text-gray-500 hover:text-gray-300">
+              <i id="loginEyeIcon" data-lucide="eye" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Collapsible First-Time Activation Key -->
+        <div class="pt-0.5">
+          <button type="button" onclick="toggleAccessKeyField()" class="text-xs font-medium text-emerald-400 hover:text-emerald-300 flex items-center gap-1.5 transition">
+            <i data-lucide="key-round" class="w-3.5 h-3.5"></i>
+            <span>Birinchi kirish kaliti (Access Key)</span>
+            <i id="accessKeyChevron" data-lucide="chevron-down" class="w-3.5 h-3.5 transition-transform"></i>
+          </button>
+
+          <div id="accessKeyWrapper" class="hidden mt-2 space-y-1">
+            <input
+              id="loginAccessKeyInput"
+              type="text"
+              autocapitalize="characters"
+              placeholder="Admin bergan SPENT-... kalitni kiriting"
+              class="w-full h-10 px-3.5 rounded-xl bg-[#070B09] border border-emerald-500/30 focus:border-emerald-500 text-xs font-mono text-emerald-300 placeholder-gray-600 focus:outline-none"
+            />
+            <p class="text-[11px] text-gray-500">Yangi qurilmada faqat 1 marta kiritiladi.</p>
+          </div>
+        </div>
+
+        <p id="loginErrorText" class="hidden text-xs text-rose-400 bg-rose-500/10 border border-rose-500/20 rounded-xl px-3 py-2"></p>
+
+        <button type="submit" class="w-full h-12 rounded-2xl bg-emerald-500 hover:bg-emerald-400 active:scale-[0.99] transition text-sm font-extrabold text-[#070B09] flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20">
+          <i data-lucide="log-in" class="w-4 h-4 stroke-[2.5]"></i>
+          <span>Kirish</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Copyright Footer -->
+    <footer class="text-center pt-6">
+      <p class="text-[11px] text-gray-400 font-semibold">© Ulugbek Isakov • Spent AI</p>
+      <p class="text-[10px] text-gray-600 mt-0.5">Barcha huquqlar himoyalangan</p>
+    </footer>
+  </div>
+
+  <!-- ==================== MAIN APP SHELL ==================== -->
+  <div id="appShell" class="hidden">
+    <main class="max-w-md mx-auto px-4 pt-1">
+
+      <!-- ==================== TAB 1: ASOSIY ==================== -->
+      <section id="tab-home" class="space-y-4">
+        <!-- Clean 2-Row Header (Below Telegram's top close button) -->
+        <header class="space-y-2.5">
+          <!-- Row 1: Classic IU Monogram + Spent AI | Currency + User Badge -->
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2.5 shrink-0">
+              <div class="w-9 h-9 rounded-xl bg-black border border-white/25 flex items-center justify-center shadow-md shrink-0">
+                <svg viewBox="0 0 100 100" class="w-6 h-6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <text x="15" y="66" fill="#FFFFFF" font-family="Georgia, 'Times New Roman', serif" font-weight="bold" font-size="52">I</text>
+                  <text x="37" y="66" fill="#FFFFFF" font-family="Georgia, 'Times New Roman', serif" font-weight="bold" font-size="52">U</text>
+                  <path d="M20 78 Q50 85 79 72" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <span class="text-lg font-extrabold tracking-tight text-white whitespace-nowrap">Spent AI</span>
+            </div>
+
+            <div class="flex items-center gap-2 shrink-0">
+              <button onclick="toggleCurrency()" class="h-8 px-3 rounded-full bg-[#0F1713] border border-white/10 active:scale-95 transition flex items-center gap-1.5 text-xs font-semibold text-white whitespace-nowrap">
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                <span id="headerCurrencyLabel">UZS</span>
+              </button>
+
+              <button onclick="switchTab('settings')" class="h-8 pl-2 pr-3 rounded-full bg-[#0F1713] border border-white/10 active:scale-95 transition flex items-center gap-1.5 text-xs font-semibold text-gray-200 whitespace-nowrap">
+                <span id="headerRoleIcon" class="text-emerald-400 flex items-center">
+                  <i data-lucide="crown" class="w-3.5 h-3.5"></i>
+                </span>
+                <span id="headerUserName" class="max-w-[96px] truncate">Ulugbek</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Row 2: Full Month/Year + Quick "+ Daromad" Button -->
+          <div class="flex items-center justify-between gap-2">
+            <h2 id="headerMonthTitle" class="text-xl font-bold text-white whitespace-nowrap">Noyabr 2026</h2>
+            <button onclick="openCalculatorModal('income')" class="h-8 px-3.5 rounded-full bg-emerald-500/15 border border-emerald-500/35 hover:bg-emerald-500/25 active:scale-95 transition flex items-center gap-1.5 text-xs font-semibold text-emerald-400 whitespace-nowrap shrink-0">
+              <i data-lucide="plus" class="w-3.5 h-3.5 stroke-[2.5]"></i>
+              <span>Daromad</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- Balance & Cashflow Card -->
+        <div class="rounded-3xl bg-gradient-to-br from-[#13201A] via-[#0F1713] to-[#0B110E] border border-white/10 p-4 shadow-lg">
+          <div class="flex items-center justify-between gap-2 mb-1">
+            <span class="text-xs font-medium text-gray-400">Joriy balans</span>
+            <span id="rateBadge" class="px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10 text-[11px] font-medium text-emerald-400 whitespace-nowrap">1 USD = 12,850 UZS</span>
+          </div>
+
+          <div id="balanceDisplay" class="text-3xl font-extrabold tracking-tight text-white mt-0.5 mb-4">
+            0 <span class="text-base font-semibold text-emerald-400">so‘m</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2.5">
+            <div onclick="setTypeFilter('income')" class="cursor-pointer rounded-2xl bg-[#070B09]/85 border border-emerald-500/20 p-3 active:scale-[0.98] transition">
+              <div class="flex items-center gap-1.5 text-[11px] font-medium text-emerald-400 mb-1">
+                <span class="w-4 h-4 rounded-full bg-emerald-500/15 flex items-center justify-center">
+                  <i data-lucide="arrow-down-left" class="w-3 h-3"></i>
+                </span>
+                <span>+ Daromad</span>
+              </div>
+              <div id="totalIncomeDisplay" class="text-sm font-bold text-white truncate">+0 so‘m</div>
+            </div>
+
+            <div onclick="setTypeFilter('expense')" class="cursor-pointer rounded-2xl bg-[#070B09]/85 border border-rose-500/20 p-3 active:scale-[0.98] transition">
+              <div class="flex items-center gap-1.5 text-[11px] font-medium text-rose-400 mb-1">
+                <span class="w-4 h-4 rounded-full bg-rose-500/15 flex items-center justify-center">
+                  <i data-lucide="arrow-up-right" class="w-3 h-3"></i>
+                </span>
+                <span>- Xarajat</span>
+              </div>
+              <div id="totalExpenseDisplay" class="text-sm font-bold text-white truncate">-0 so‘m</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Smart AI Quick Text Input (Neutral placeholder) -->
+        <form onsubmit="handleQuickTextSubmit(event)" class="relative flex items-center gap-2 bg-[#0F1713] border border-white/10 focus-within:border-emerald-500/50 rounded-2xl p-1.5 pl-3 transition">
+          <i data-lucide="sparkles" class="w-4 h-4 text-emerald-400 shrink-0"></i>
+          <input
+            id="aiQuickInput"
+            type="text"
+            autocomplete="off"
+            placeholder="Daromad yoki xarajatni yozing..."
+            class="w-full bg-transparent text-sm text-white placeholder-gray-500 focus:outline-none py-1.5"
+          />
+          <button type="submit" aria-label="Yuborish" class="w-9 h-9 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:scale-95 transition flex items-center justify-center text-[#070B09] shrink-0">
+            <i data-lucide="arrow-up" class="w-4 h-4 stroke-[2.5]"></i>
+          </button>
+        </form>
+
+        <!-- Segmented Type Filter -->
+        <div class="grid grid-cols-3 gap-1 p-1 rounded-2xl bg-[#0F1713] border border-white/5">
+          <button onclick="setTypeFilter('all')" id="typeTab-all" class="py-2 rounded-xl text-xs font-semibold bg-emerald-500 text-[#070B09] transition">Hammasi</button>
+          <button onclick="setTypeFilter('expense')" id="typeTab-expense" class="py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white transition">Xarajatlar</button>
+          <button onclick="setTypeFilter('income')" id="typeTab-income" class="py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white transition">Daromadlar</button>
+        </div>
+
+        <!-- Category Filter Pills -->
+        <div id="categoryFilterBar" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-0.5"></div>
+
+        <!-- Transactions Feed -->
+        <div id="transactionsContainer" class="space-y-3"></div>
+      </section>
+
+      <!-- ==================== TAB 2: STATISTIKA ==================== -->
+      <section id="tab-stats" class="hidden space-y-4">
+        <div class="flex items-center justify-between gap-2">
+          <div>
+            <h2 class="text-xl font-bold text-white">Statistika</h2>
+            <p class="text-xs text-gray-400">Oylik tahlil va hisobotlar</p>
+          </div>
+          <button onclick="exportCSV()" class="h-9 px-3.5 rounded-xl bg-[#0F1713] border border-emerald-500/30 active:scale-95 transition flex items-center gap-1.5 text-xs font-semibold text-emerald-400 whitespace-nowrap">
+            <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+            <span>CSV Excel</span>
+          </button>
+        </div>
+
+        <!-- Doughnut Chart -->
+        <div class="rounded-3xl bg-[#0F1713] border border-white/10 p-4">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-sm font-semibold text-white">Kategoriyalar bo‘yicha</span>
+            <div class="flex items-center gap-1 bg-[#070B09] p-1 rounded-xl border border-white/5">
+              <button onclick="setChartMode('expense')" id="chartMode-expense" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-emerald-500 text-[#070B09] transition">Xarajat</button>
+              <button onclick="setChartMode('income')" id="chartMode-income" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold text-gray-400 transition">Daromad</button>
+            </div>
+          </div>
+
+          <div id="chartWrapper" class="relative h-52 flex items-center justify-center">
+            <canvas id="categoryDoughnutChart"></canvas>
+            <div id="chartEmptyState" class="hidden text-center">
+              <p class="text-xs text-gray-400">Grafik uchun ma’lumot yetarli emas</p>
+            </div>
+          </div>
+
+          <div id="chartLegendList" class="mt-3 space-y-2"></div>
+        </div>
+
+        <!-- Monthly Calendar -->
+        <div class="rounded-3xl bg-[#0F1713] border border-white/10 p-4">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-sm font-semibold text-white">Kunlik kalendar</span>
+            <span id="calendarMonthLabel" class="text-xs text-emerald-400 font-medium">Noyabr 2026</span>
+          </div>
+          <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-semibold text-gray-500 mb-1.5">
+            <span>Du</span><span>Se</span><span>Ch</span><span>Pa</span><span>Ju</span><span>Sh</span><span>Ya</span>
+          </div>
+          <div id="calendarGrid" class="grid grid-cols-7 gap-1.5"></div>
+          <div id="selectedDayDetails" class="mt-4 pt-3 border-t border-white/10"></div>
+        </div>
+      </section>
+
+      <!-- ==================== TAB 3: BYUDJET ==================== -->
+      <section id="tab-budget" class="hidden space-y-4">
+        <div class="flex items-center justify-between gap-2">
+          <div>
+            <h2 class="text-xl font-bold text-white">Byudjet</h2>
+            <p class="text-xs text-gray-400">Oylik xarajat limitlari nazorati</p>
+          </div>
+          <button onclick="openBudgetModal()" class="h-9 px-3.5 rounded-xl bg-emerald-500 active:scale-95 transition flex items-center gap-1.5 text-xs font-bold text-[#070B09] whitespace-nowrap">
+            <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5"></i>
+            <span>Limit sozlash</span>
+          </button>
+        </div>
+
+        <div class="rounded-3xl bg-[#0F1713] border border-white/10 p-4">
+          <div class="flex items-center justify-between text-xs mb-2">
+            <span class="text-gray-400">Umumiy oylik limit</span>
+            <span id="overallBudgetPercent" class="font-bold text-emerald-400">0%</span>
+          </div>
+          <div id="overallBudgetAmounts" class="text-base font-bold text-white mb-2.5">0 / 0 so‘m</div>
+          <div class="w-full h-2.5 rounded-full bg-[#070B09] overflow-hidden">
+            <div id="overallBudgetBar" class="h-full bg-emerald-500 rounded-full transition-all duration-300" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <div id="budgetCategoriesList" class="space-y-3"></div>
+      </section>
+
+      <!-- ==================== TAB 4: SOZLAMALAR & ADMIN PANEL ==================== -->
+      <section id="tab-settings" class="hidden space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-xl font-bold text-white">Sozlamalar</h2>
+            <p class="text-xs text-gray-400">Xavfsizlik, ruxsatlar va zaxira</p>
+          </div>
+          <button onclick="logoutUser()" class="h-9 px-3.5 rounded-xl bg-rose-500/15 border border-rose-500/30 active:scale-95 transition flex items-center gap-1.5 text-xs font-bold text-rose-400 whitespace-nowrap">
+            <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+            <span>Chiqish</span>
+          </button>
+        </div>
+
+        <!-- Active Account Card -->
+        <div class="rounded-3xl bg-[#0F1713] border border-white/10 p-4 flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3 min-w-0">
+            <div id="settingsAvatar" class="w-12 h-12 rounded-2xl bg-black border border-white/25 text-white font-serif font-bold text-lg flex items-center justify-center shrink-0">
+              IU
+            </div>
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5">
+                <h3 id="settingsDisplayName" class="text-base font-bold text-white truncate">Ulugbek Isakov</h3>
+                <span id="settingsRoleBadge" class="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 text-[10px] font-bold whitespace-nowrap">Admin</span>
+              </div>
+              <p id="settingsLoginLabel" class="text-xs text-gray-400 truncate">Login: ulugbek</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== ADMIN PANEL: INVITE-ONLY USER & KEY GENERATOR ==================== -->
+        <div id="adminPanelCard" class="hidden rounded-3xl bg-gradient-to-b from-[#13221B] to-[#0F1713] border border-emerald-500/30 p-4 space-y-4 shadow-lg">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                <i data-lucide="shield-alert" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <h3 class="text-sm font-bold text-white">Foydalanuvchilar boshqaruvi</h3>
+                <p class="text-[11px] text-gray-400">Ruxsat berilgan login va kalit yaratish</p>
+              </div>
+            </div>
+            <span class="px-2 py-0.5 rounded-md bg-emerald-500 text-[#070B09] text-[10px] font-extrabold">ADMIN</span>
+          </div>
+
+          <!-- Create New User / Access Pass Form -->
+          <div class="rounded-2xl bg-[#070B09] border border-white/10 p-3.5 space-y-3">
+            <div class="text-xs font-semibold text-emerald-400">+ Yangi foydalanuvchiga ruxsat berish</div>
+            <div class="grid grid-cols-2 gap-2">
+              <input id="newInviteLogin" type="text" autocapitalize="none" placeholder="Yangi login" class="h-10 px-3 rounded-xl bg-[#0F1713] border border-white/10 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500" />
+              <input id="newInvitePass" type="text" placeholder="Yangi parol" class="h-10 px-3 rounded-xl bg-[#0F1713] border border-white/10 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500" />
+            </div>
+            <input id="newInviteLabel" type="text" placeholder="Foydalanuvchi ismi yoki izoh" class="w-full h-10 px-3 rounded-xl bg-[#0F1713] border border-white/10 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500" />
+            <button onclick="generateInviteUser()" class="w-full h-10 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:scale-[0.99] transition text-xs font-extrabold text-[#070B09] flex items-center justify-center gap-1.5">
+              <i data-lucide="key" class="w-3.5 h-3.5"></i>
+              <span>Login, Parol va Kalit yaratish</span>
+            </button>
+          </div>
+
+          <!-- Generated Invite Result Box -->
+          <div id="generatedInviteBox" class="hidden rounded-2xl bg-emerald-500/10 border border-emerald-500/35 p-3.5 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-emerald-300">Tayyor kirish ma’lumotlari:</span>
+              <button onclick="copyGeneratedInvite()" class="px-3 py-1 rounded-lg bg-emerald-500 text-[#070B09] text-[11px] font-extrabold active:scale-95 transition flex items-center gap-1">
+                <i data-lucide="copy" class="w-3 h-3"></i>
+                <span>Nusxalash</span>
+              </button>
+            </div>
+            <pre id="generatedInviteText" class="text-[11px] font-mono text-white bg-[#070B09] p-2.5 rounded-xl overflow-x-auto whitespace-pre-wrap leading-relaxed"></pre>
+          </div>
+
+          <!-- List of Authorized Users -->
+          <div class="space-y-2">
+            <div class="text-xs font-semibold text-gray-400">Ruxsat berilgan foydalanuvchilar</div>
+            <div id="authorizedUsersList" class="space-y-2"></div>
+          </div>
+        </div>
+
+        <!-- Change Own Login / Password -->
+        <div class="rounded-3xl bg-[#0F1713] border border-white/10 p-4 space-y-3">
+          <div class="flex items-center gap-2">
+            <i data-lucide="lock-keyhole" class="w-4 h-4 text-emerald-400"></i>
+            <span class="text-sm font-semibold text-white">Login va Parolni o‘zgartirish</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <input id="editOwnLoginInput" type="text" autocapitalize="none" placeholder="Yangi login" class="h-10 px-3 rounded-xl bg-[#070B09] border border-white/10 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500" />
+            <input id="editOwnPassInput" type="text" placeholder="Yangi parol" class="h-10 px-3 rounded-xl bg-[#070B09] border border-white/10 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500" />
+          </div>
+          <button onclick="updateOwnCredentials()" class="w-full h-10 rounded-xl bg-white/10 hover:bg-white/15 active:scale-[0.99] transition text-xs font-bold text-white">
+            Ma’lumotlarni yangilash
+          </button>
+        </div>
+
+        <!-- Dollar Exchange Rate -->
+        <div class="rounded-3xl bg-[#0F1713] border border-white/10 p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-semibold text-white">Dollar kursi (1 USD)</span>
+            <span class="text-xs text-gray-400">UZS hisobida</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <input id="rateInput" type="number" inputmode="numeric" class="w-full h-11 px-3.5 rounded-xl bg-[#070B09] border border-white/10 focus:border-emerald-500 text-sm font-bold text-white focus:outline-none" />
+            <button onclick="saveExchangeRate()" class="h-11 px-5 rounded-xl bg-emerald-500 active:scale-95 transition text-xs font-bold text-[#070B09] whitespace-nowrap shrink-0">
+              Saqlash
+            </button>
+          </div>
+        </div>
+
+        <!-- Backup & Reset -->
+        <div class="rounded-3xl bg-[#0F1713] border border-white/10 p-4 space-y-2.5">
+          <span class="text-xs font-semibold uppercase tracking-wider text-gray-400 block mb-1">Ma’lumotlar va Zaxira</span>
+          <div class="grid grid-cols-2 gap-2.5">
+            <button onclick="exportCSV()" class="h-11 px-3 rounded-xl bg-[#070B09] border border-white/10 active:scale-95 transition flex items-center justify-center gap-2 text-xs font-semibold text-gray-200">
+              <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-400"></i>
+              <span>CSV (Excel)</span>
+            </button>
+            <button onclick="exportJSON()" class="h-11 px-3 rounded-xl bg-[#070B09] border border-white/10 active:scale-95 transition flex items-center justify-center gap-2 text-xs font-semibold text-gray-200">
+              <i data-lucide="download" class="w-4 h-4 text-sky-400"></i>
+              <span>JSON Backup</span>
+            </button>
+            <label class="cursor-pointer h-11 px-3 rounded-xl bg-[#070B09] border border-white/10 active:scale-95 transition flex items-center justify-center gap-2 text-xs font-semibold text-gray-200">
+              <i data-lucide="upload" class="w-4 h-4 text-amber-400"></i>
+              <span>Backup Tiklash</span>
+              <input type="file" accept=".json" onchange="importJSON(event)" class="hidden" />
+            </label>
+            <button onclick="openClearConfirmModal()" class="h-11 px-3 rounded-xl bg-rose-500/10 border border-rose-500/25 active:scale-95 transition flex items-center justify-center gap-2 text-xs font-semibold text-rose-400">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+              <span>Tozalash</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Copyright Signature -->
+        <div class="text-center pt-2 pb-4">
+          <p class="text-[11px] text-gray-400 font-semibold">© Ulugbek Isakov • Spent AI</p>
+          <p class="text-[10px] text-gray-600">Mualliflik huquqi bilan himoyalangan</p>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ==================== FLOATING ACTION BAR & BOTTOM NAV ==================== -->
+    <div class="fixed bottom-0 inset-x-0 z-40 pointer-events-none">
+      <div class="max-w-md mx-auto flex items-center justify-center gap-5 mb-3 pointer-events-auto">
+        <button onclick="openCalculatorModal('expense')" aria-label="Kalkulyator" class="w-12 h-12 rounded-2xl bg-[#131E19] border border-white/15 shadow-xl active:scale-90 transition flex items-center justify-center text-gray-200">
+          <i data-lucide="calculator" class="w-5 h-5"></i>
+        </button>
+
+        <button onclick="openVoiceModal()" aria-label="Ovozli kiritish" class="w-16 h-16 rounded-full bg-emerald-500 mic-glow active:scale-90 transition flex items-center justify-center text-[#070B09]">
+          <i data-lucide="mic" class="w-7 h-7 stroke-[2.4]"></i>
+        </button>
+
+        <button onclick="openScannerModal()" aria-label="Chek skanerlash" class="w-12 h-12 rounded-2xl bg-[#131E19] border border-white/15 shadow-xl active:scale-90 transition flex items-center justify-center text-gray-200">
+          <i data-lucide="camera" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <nav class="bg-[#0B110E]/95 backdrop-blur-xl border-t border-white/10 pointer-events-auto" style="padding-bottom: var(--safe-bottom);">
+        <div class="max-w-md mx-auto grid grid-cols-4 h-16">
+          <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center justify-center gap-1 text-emerald-400 transition">
+            <i data-lucide="home" class="w-5 h-5"></i>
+            <span class="text-[10px] font-semibold">Asosiy</span>
+          </button>
+          <button onclick="switchTab('stats')" id="nav-stats" class="flex flex-col items-center justify-center gap-1 text-gray-500 transition">
+            <i data-lucide="pie-chart" class="w-5 h-5"></i>
+            <span class="text-[10px] font-medium">Statistika</span>
+          </button>
+          <button onclick="switchTab('budget')" id="nav-budget" class="flex flex-col items-center justify-center gap-1 text-gray-500 transition">
+            <i data-lucide="wallet-cards" class="w-5 h-5"></i>
+            <span class="text-[10px] font-medium">Byudjet</span>
+          </button>
+          <button onclick="switchTab('settings')" id="nav-settings" class="flex flex-col items-center justify-center gap-1 text-gray-500 transition">
+            <i data-lucide="settings" class="w-5 h-5"></i>
+            <span class="text-[10px] font-medium">Sozlamalar</span>
+          </button>
+        </div>
+      </nav>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 1: MANUAL CALCULATOR ==================== -->
+  <div id="modal-calculator" class="fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-sm flex items-end justify-center">
+    <div class="modal-sheet w-full max-w-md bg-[#0F1713] border-t border-white/10 rounded-t-3xl p-4 space-y-3" style="padding-bottom: calc(16px + var(--safe-bottom));">
+      <div class="flex items-center justify-between">
+        <div class="grid grid-cols-2 gap-1 p-1 rounded-xl bg-[#070B09] border border-white/5 w-56">
+          <button onclick="setCalcType('expense')" id="calcType-expense" class="py-1.5 rounded-lg text-xs font-bold bg-rose-500 text-white transition">Xarajat (-)</button>
+          <button onclick="setCalcType('income')" id="calcType-income" class="py-1.5 rounded-lg text-xs font-bold text-gray-400 transition">Daromad (+)</button>
+        </div>
+        <button onclick="closeAllModals()" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="rounded-2xl bg-[#070B09] border border-white/10 p-3.5 flex items-center justify-between">
+        <button onclick="toggleCalcCurrency()" id="calcCurrencyBtn" class="px-2.5 py-1 rounded-lg bg-white/5 text-xs font-bold text-emerald-400">UZS</button>
+        <div id="calcAmountText" class="text-2xl font-extrabold text-white tracking-tight">0</div>
+      </div>
+
+      <input id="calcNoteInput" type="text" placeholder="Izoh kiriting..." class="w-full h-10 px-3.5 rounded-xl bg-[#070B09] border border-white/10 focus:border-emerald-500 text-xs text-white placeholder-gray-500 focus:outline-none" />
+
+      <div id="calcCategoryGrid" class="grid grid-cols-3 gap-1.5 max-h-36 overflow-y-auto no-scrollbar"></div>
+
+      <div class="grid grid-cols-3 gap-1.5 pt-1">
+        <button onclick="pressCalcKey('1')" class="h-11 rounded-xl bg-[#15201B] active:bg-[#1E2E27] text-lg font-bold text-white">1</button>
+        <button onclick="pressCalcKey('2')" class="h-11 rounded-xl bg-[#15201B] active:bg-[#1E2E27] text-lg font-bold text-white">2</button>
+        <button onclick="pressCalcKey('3')" class="h-11 rounded-xl bg-[#15201B] active:bg-[#1E2E27] text-lg font-bold text-white">3</button>
+        <button onclick="pressCalcKey('4')" class="h-11 rounded-xl bg-[#15201B] active:bg-[#1E2E27] text-lg font-bold text-white">4</button>
+        <button onclick="pressCalcKey('5')" class="h-11 rounded-xl bg-[#15201B] active:bg-[#1E2E27] text-lg font-bold text-white">5</button>
+        <button onclick="pressCalcKey('6')" class="h-11 rounded-xl bg-[#15201B] active:bg-[#1E2E27] text-lg font-bold text-white">6</button>
+        <button onclick="pressCalcKey('7')" class="h-11 rounded-xl bg-[#15201B] active:bg-[#1E2E27] text-lg font-bold text-white">7</button>
+        <button onclick="pressCalcKey('8')" class="h-11 rounded-xl bg-[#15201B] active:bg-[#1E2E27] text-lg font-bold text-white">8</button>
+        <button onclick="pressCalcKey('9')" class="h-11 rounded-xl bg-[#15201B] active:bg-[#1E2E27] text-lg font-bold text-white">9</button>
+        <button onclick="pressCalcKey('000')" class="h-11 rounded-xl bg-[#15201B] active:bg-[#1E2E27] text-sm font-bold text-emerald-400">000</button>
+        <button onclick="pressCalcKey('0')" class="h-11 rounded-xl bg-[#15201B] active:bg-[#1E2E27] text-lg font-bold text-white">0</button>
+        <button onclick="pressCalcKey('del')" class="h-11 rounded-xl bg-[#15201B] active:bg-[#1E2E27] flex items-center justify-center text-gray-300">
+          <i data-lucide="delete" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <button onclick="saveCalcTransaction()" class="w-full h-12 rounded-2xl bg-emerald-500 hover:bg-emerald-400 active:scale-[0.99] transition text-sm font-extrabold text-[#070B09]">
+        Saqlash
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 2: VOICE AI ==================== -->
+  <div id="modal-voice" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-end justify-center">
+    <div class="modal-sheet w-full max-w-md bg-[#0F1713] border-t border-white/10 rounded-t-3xl p-5 space-y-4" style="padding-bottom: calc(20px + var(--safe-bottom));">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+          <span class="text-sm font-bold text-white">Ovozli AI</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="setSpeechLang('uz-UZ')" id="langBtn-uz" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-500 text-[#070B09]">O‘zbek</button>
+          <button onclick="setSpeechLang('ru-RU')" id="langBtn-ru" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-white/5 text-gray-400">Русский</button>
+          <button onclick="closeAllModals()" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 ml-1">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="h-14 rounded-2xl bg-[#070B09] border border-white/5 flex items-center justify-center gap-1.5">
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+      </div>
+
+      <p id="voiceStatusLabel" class="text-center text-xs text-emerald-400 font-medium">Tinglanmoqda... Gapiring</p>
+
+      <textarea id="voiceTranscriptInput" rows="2" placeholder="Daromad yoki xarajatni yozing..." class="w-full p-3 rounded-2xl bg-[#070B09] border border-white/10 focus:border-emerald-500 text-sm text-white placeholder-gray-500 focus:outline-none resize-none"></textarea>
+
+      <div class="grid grid-cols-2 gap-2.5">
+        <button onclick="startSpeechListening()" class="h-11 rounded-2xl bg-white/5 border border-white/10 active:scale-95 transition flex items-center justify-center gap-2 text-xs font-semibold text-white">
+          <i data-lucide="mic" class="w-4 h-4 text-emerald-400"></i>
+          <span>Qayta tinglash</span>
+        </button>
+        <button onclick="confirmVoiceEntry()" class="h-11 rounded-2xl bg-emerald-500 active:scale-95 transition flex items-center justify-center gap-2 text-xs font-extrabold text-[#070B09]">
+          <i data-lucide="check" class="w-4 h-4"></i>
+          <span>Qo‘shish</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 3: RECEIPT SCANNER ==================== -->
+  <div id="modal-scanner" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-end justify-center">
+    <div class="modal-sheet w-full max-w-md bg-[#0F1713] border-t border-white/10 rounded-t-3xl p-5 space-y-4" style="padding-bottom: calc(20px + var(--safe-bottom));">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i data-lucide="scan-line" class="w-5 h-5 text-emerald-400"></i>
+          <span class="text-sm font-bold text-white">Chek va Skrinshot Skaner</span>
+        </div>
+        <button onclick="closeAllModals()" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <label class="cursor-pointer block rounded-2xl border-2 border-dashed border-emerald-500/35 bg-[#070B09] p-4 text-center hover:border-emerald-500/60 transition">
+        <img id="receiptPreviewImg" class="hidden max-h-36 mx-auto rounded-xl mb-2 object-contain" alt="Chek rasmi" />
+        <div id="receiptUploadPlaceholder" class="py-3 space-y-1.5">
+          <i data-lucide="camera" class="w-8 h-8 text-emerald-400 mx-auto"></i>
+          <p class="text-xs font-semibold text-white">Chek rasmini oling yoki galereyadan tanlang</p>
+          <p class="text-[11px] text-gray-400">Payme, Click, Uzum yoki do‘kon cheki</p>
+        </div>
+        <input type="file" accept="image/*" onchange="handleReceiptImageSelect(event)" class="hidden" />
+      </label>
+
+      <div class="space-y-2.5">
+        <div class="grid grid-cols-2 gap-1 p-1 rounded-xl bg-[#070B09] border border-white/5">
+          <button onclick="setScanType('expense')" id="scanType-expense" class="py-1.5 rounded-lg text-xs font-bold bg-rose-500 text-white transition">Xarajat (-)</button>
+          <button onclick="setScanType('income')" id="scanType-income" class="py-1.5 rounded-lg text-xs font-bold text-gray-400 transition">Daromad (+)</button>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <input id="scanAmountInput" type="number" inputmode="numeric" placeholder="Summa (UZS)" class="h-10 px-3 rounded-xl bg-[#070B09] border border-white/10 text-xs font-bold text-white focus:outline-none focus:border-emerald-500" />
+          <select id="scanCategorySelect" class="h-10 px-3 rounded-xl bg-[#070B09] border border-white/10 text-xs font-semibold text-white focus:outline-none focus:border-emerald-500"></select>
+        </div>
+
+        <input id="scanNoteInput" type="text" placeholder="Izoh kiriting..." class="w-full h-10 px-3 rounded-xl bg-[#070B09] border border-white/10 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500" />
+      </div>
+
+      <button onclick="saveScannedTransaction()" class="w-full h-12 rounded-2xl bg-emerald-500 active:scale-[0.99] transition text-sm font-extrabold text-[#070B09]">
+        Chekni saqlash
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 4: BUDGET LIMITS ==================== -->
+  <div id="modal-budget" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-end justify-center">
+    <div class="modal-sheet w-full max-w-md bg-[#0F1713] border-t border-white/10 rounded-t-3xl p-5 space-y-4" style="padding-bottom: calc(20px + var(--safe-bottom));">
+      <div class="flex items-center justify-between">
+        <span class="text-sm font-bold text-white">Oylik kategoriya limitlari (UZS)</span>
+        <button onclick="closeAllModals()" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <div id="budgetEditorInputs" class="space-y-2.5 max-h-72 overflow-y-auto no-scrollbar pr-1"></div>
+      <button onclick="saveBudgetLimits()" class="w-full h-12 rounded-2xl bg-emerald-500 active:scale-[0.99] transition text-sm font-extrabold text-[#070B09]">
+        Limitlarni saqlash
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 5: CONFIRMATION DIALOG ==================== -->
+  <div id="modal-dialog" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="w-full max-w-xs rounded-3xl bg-[#0F1713] border border-white/10 p-5 space-y-4">
+      <h3 id="dialogTitle" class="text-base font-bold text-white">Tasdiqlash</h3>
+      <p id="dialogDesc" class="text-xs text-gray-400"></p>
+      <div class="grid grid-cols-2 gap-2">
+        <button onclick="closeAllModals()" class="h-10 rounded-xl bg-white/5 text-xs font-semibold text-gray-300">Bekor qilish</button>
+        <button id="dialogConfirmBtn" class="h-10 rounded-xl bg-rose-500 text-xs font-bold text-white">Tasdiqlash</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== JAVASCRIPT CORE ==================== -->
+  <script>
+    // 1. Telegram WebApp SDK Init
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      tg.ready();
+      tg.expand();
+      try {
+        tg.setHeaderColor('#070B09');
+        tg.setBackgroundColor('#070B09');
+      } catch (e) {}
+    }
+
+    function hapticLight() { try { tg?.HapticFeedback?.impactOccurred('light'); } catch (e) {} }
+    function hapticSuccess() { try { tg?.HapticFeedback?.notificationOccurred('success'); } catch (e) {} }
+
+    // 2. Cryptographic Signed Access Key System (Client-Side Cross-Device Invite)
+    const SYSTEM_SECRET = 'IU_SPENT_AI_1998_ULUGBEK_SECURE';
+
+    function computeSignature(login, pass) {
+      const str = `${login.toLowerCase()}:${pass}:${SYSTEM_SECRET}`;
+      let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+      for (let i = 0; i < str.length; i++) {
+        const ch = str.charCodeAt(i);
+        h1 = Math.imul(h1 ^ ch, 2654435761);
+        h2 = Math.imul(h2 ^ ch, 1597334677);
+      }
+      h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+      return (h1 >>> 0).toString(36).toUpperCase().padStart(6, '0').slice(0, 6);
+    }
+
+    function buildAccessKey(login, pass, label) {
+      const sig = computeSignature(login, pass);
+      const payload = btoa(unescape(encodeURIComponent(JSON.stringify({
+        l: login.toLowerCase(),
+        p: pass,
+        n: label || login
+      }))));
+      return `SPENT-${sig}-${payload}`;
+    }
+
+    function verifyAccessKey(keyStr, enteredLogin, enteredPass) {
+      try {
+        const clean = keyStr.trim();
+        if (!clean.startsWith('SPENT-')) return null;
+        const parts = clean.split('-');
+        if (parts.length < 3) return null;
+        const sig = parts[1];
+        const payloadB64 = parts.slice(2).join('-');
+        const decoded = JSON.parse(decodeURIComponent(escape(atob(payloadB64))));
+        if (!decoded.l || !decoded.p) return null;
+        const expectedSig = computeSignature(decoded.l, decoded.p);
+        if (sig !== expectedSig) return null;
+        if (decoded.l.toLowerCase() !== enteredLogin.toLowerCase() || decoded.p !== enteredPass) {
+          return null;
+        }
+        return {
+          login: decoded.l.toLowerCase(),
+          password: decoded.p,
+          displayName: decoded.n || decoded.l,
+          role: 'user',
+          accessKey: clean
+        };
+      } catch (e) {
+        return null;
+      }
+    }
+
+    // 3. Global Auth Registry & Session Storage
+    const AUTH_REGISTRY_KEY = 'spent_ai_auth_registry_v2';
+    const ACTIVE_SESSION_KEY = 'spent_ai_active_session_v2';
+
+    function loadAuthRegistry() {
+      try {
+        const raw = localStorage.getItem(AUTH_REGISTRY_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch (e) {}
+      // Default Admin: ulugbek / 1998
+      const defaultAdmin = [{
+        login: 'ulugbek',
+        password: '1998',
+        displayName: 'Ulugbek Isakov',
+        role: 'admin',
+        createdAt: '2026-11-25',
+        revoked: false
+      }];
+      localStorage.setItem(AUTH_REGISTRY_KEY, JSON.stringify(defaultAdmin));
+      return defaultAdmin;
+    }
+
+    function saveAuthRegistry(users) {
+      localStorage.setItem(AUTH_REGISTRY_KEY, JSON.stringify(users));
+    }
+
+    let authUsers = loadAuthRegistry();
+    let currentUser = null;
+
+    // 4. Categories & Constants (Includes dedicated 'Uyga bozorlik' vs 'Ovqat')
+    const EXPENSE_CATEGORIES = [
+      { id: 'Uyga bozorlik', name: 'Uyga bozorlik', icon: 'shopping-basket', color: '#22C55E' },
+      { id: 'Ovqat', name: 'Ovqat', icon: 'utensils', color: '#10B981' },
+      { id: 'Transport', name: 'Transport', icon: 'car', color: '#3B82F6' },
+      { id: 'Xaridlar', name: 'Xaridlar', icon: 'shopping-bag', color: '#F59E0B' },
+      { id: 'Uy-joy', name: 'Uy-joy', icon: 'home', color: '#8B5CF6' },
+      { id: 'Salomatlik', name: 'Salomatlik', icon: 'heart-pulse', color: '#EF4444' },
+      { id: 'Qarz berdim', name: 'Qarz berdim', icon: 'hand-coins', color: '#F97316' },
+      { id: 'Ko‘ngilochar', name: 'Ko‘ngilochar', icon: 'gamepad-2', color: '#EC4899' },
+      { id: 'Boshqa', name: 'Boshqa', icon: 'layers', color: '#6B7280' }
+    ];
+
+    const INCOME_CATEGORIES = [
+      { id: 'Maosh', name: 'Maosh', icon: 'briefcase', color: '#10B981' },
+      { id: 'Biznes / Frilans', name: 'Biznes / Frilans', icon: 'laptop', color: '#06B6D4' },
+      { id: 'O‘tkazma', name: 'O‘tkazma', icon: 'arrow-left-right', color: '#3B82F6' },
+      { id: 'Qarz oldim', name: 'Qarz oldim', icon: 'hand-helping', color: '#F59E0B' },
+      { id: 'Keshbek', name: 'Keshbek', icon: 'percent', color: '#8B5CF6' },
+      { id: 'Boshqa', name: 'Boshqa', icon: 'plus-circle', color: '#22C55E' }
+    ];
+
+    const ALL_CATEGORIES = [...EXPENSE_CATEGORIES, ...INCOME_CATEGORIES];
+    const UZ_MONTHS = [
+      'Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'Iyun',
+      'Iyul', 'Avgust', 'Sentabr', 'Oktabr', 'Noyabr', 'Dekabr'
+    ];
+
+    // 5. Per-User Isolated Financial State
+    let state = null;
+    let currentTab = 'home';
+    let typeFilter = 'all';
+    let categoryFilter = 'Barchasi';
+    let chartMode = 'expense';
+    let selectedCalendarDay = new Date().toISOString().slice(0, 10);
+    let doughnutChartInstance = null;
+
+    function getUserStorageKey(login) {
+      return `spent_ai_data_${login.toLowerCase()}`;
+    }
+
+    function getDefaultBudgets() {
+      return {
+        'Uyga bozorlik': 2000000,
+        'Ovqat': 1200000,
+        'Transport': 600000,
+        'Xaridlar': 1500000,
+        'Uy-joy': 1000000,
+        'Salomatlik': 500000,
+        'Qarz berdim': 500000,
+        'Ko‘ngilochar': 500000,
+        'Boshqa': 500000
+      };
+    }
+
+    function loadUserState(login) {
+      try {
+        const raw = localStorage.getItem(getUserStorageKey(login));
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          const mergedBudgets = { ...getDefaultBudgets(), ...(parsed.budgets || {}) };
+          return {
+            transactions: Array.isArray(parsed.transactions) ? parsed.transactions : [],
+            currency: parsed.currency || 'UZS',
+            exchangeRate: Number(parsed.exchangeRate) || 12850,
+            budgets: mergedBudgets
+          };
+        }
+      } catch (e) {}
+      return {
+        transactions: [],
+        currency: 'UZS',
+        exchangeRate: 12850,
+        budgets: getDefaultBudgets()
+      };
+    }
+
+    function saveUserState() {
+      if (!currentUser || !state) return;
+      localStorage.setItem(getUserStorageKey(currentUser.login), JSON.stringify(state));
+    }
+
+    // 6. Login & Logout Flow
+    function togglePasswordVisibility(inputId, iconId) {
+      const inp = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
+      if (inp.type === 'password') {
+        inp.type = 'text';
+        icon.setAttribute('data-lucide', 'eye-off');
+      } else {
+        inp.type = 'password';
+        icon.setAttribute('data-lucide', 'eye');
+      }
+      lucide.createIcons();
+    }
+
+    function toggleAccessKeyField() {
+      hapticLight();
+      const wrap = document.getElementById('accessKeyWrapper');
+      const chev = document.getElementById('accessKeyChevron');
+      const isHidden = wrap.classList.contains('hidden');
+      wrap.classList.toggle('hidden', !isHidden);
+      chev.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+    }
+
+    function handleLoginSubmit(e) {
+      e.preventDefault();
+      const loginRaw = document.getElementById('loginUsernameInput').value.trim().toLowerCase();
+      const passRaw = document.getElementById('loginPasswordInput').value.trim();
+      const keyRaw = document.getElementById('loginAccessKeyInput').value.trim();
+      const errEl = document.getElementById('loginErrorText');
+
+      errEl.classList.add('hidden');
+
+      if (!loginRaw || !passRaw) {
+        errEl.textContent = 'Iltimos, login va parolni kiriting.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+
+      authUsers = loadAuthRegistry();
+      let matchedUser = authUsers.find(u => u.login.toLowerCase() === loginRaw);
+
+      if (matchedUser) {
+        if (matchedUser.revoked) {
+          errEl.textContent = 'Ushbu akkauntga kirish admin tomonidan bloklangan.';
+          errEl.classList.remove('hidden');
+          return;
+        }
+        if (matchedUser.password !== passRaw) {
+          errEl.textContent = 'Login yoki parol noto‘g‘ri.';
+          errEl.classList.remove('hidden');
+          return;
+        }
+      } else if (keyRaw) {
+        const activated = verifyAccessKey(keyRaw, loginRaw, passRaw);
+        if (!activated) {
+          errEl.textContent = 'Kirish kaliti (Access Key) yoki login-parol noto‘g‘ri.';
+          errEl.classList.remove('hidden');
+          return;
+        }
+        activated.createdAt = new Date().toISOString().slice(0, 10);
+        activated.revoked = false;
+        authUsers.push(activated);
+        saveAuthRegistry(authUsers);
+        matchedUser = activated;
+      } else {
+        errEl.textContent = 'Ruxsat berilmagan login. Agar birinchi marta kirayotgan bo‘lsangiz, admin bergan Kirish kalitini kiriting.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+
+      currentUser = matchedUser;
+      localStorage.setItem(ACTIVE_SESSION_KEY, currentUser.login);
+      state = loadUserState(currentUser.login);
+
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('appShell').classList.remove('hidden');
+      hapticSuccess();
+      renderAll();
+      showToast(`Xush kelibsiz, ${currentUser.displayName}!`);
+    }
+
+    function logoutUser() {
+      hapticLight();
+      localStorage.removeItem(ACTIVE_SESSION_KEY);
+      currentUser = null;
+      state = null;
+      document.getElementById('loginPasswordInput').value = '';
+      document.getElementById('loginErrorText').classList.add('hidden');
+      document.getElementById('appShell').classList.add('hidden');
+      document.getElementById('loginScreen').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    // 7. Admin Panel Logic
+    let lastGeneratedInviteMessage = '';
+
+    function generateInviteUser() {
+      if (currentUser?.role !== 'admin') return;
+      const login = document.getElementById('newInviteLogin').value.trim().toLowerCase();
+      const pass = document.getElementById('newInvitePass').value.trim();
+      const label = document.getElementById('newInviteLabel').value.trim() || login;
+
+      if (!login || !pass) {
+        showToast('Login va parolni kiriting', true);
+        return;
+      }
+      if (login === currentUser.login) {
+        showToast('Bu admin logini', true);
+        return;
+      }
+
+      const accessKey = buildAccessKey(login, pass, label);
+      authUsers = loadAuthRegistry();
+      const existingIdx = authUsers.findIndex(u => u.login === login);
+      const userObj = {
+        login,
+        password: pass,
+        displayName: label,
+        role: 'user',
+        accessKey,
+        createdAt: new Date().toISOString().slice(0, 10),
+        revoked: false
+      };
+
+      if (existingIdx >= 0) authUsers[existingIdx] = userObj;
+      else authUsers.push(userObj);
+      saveAuthRegistry(authUsers);
+
+      lastGeneratedInviteMessage =
+        `🔐 IU Spent AI — Shaxsiy kirish ruxsati\n` +
+        `👤 Login: ${login}\n` +
+        `🔑 Parol: ${pass}\n` +
+        `🎫 Kalit: ${accessKey}\n` +
+        `(Birinchi kirishda kalitni ham kiriting)`;
+
+      document.getElementById('generatedInviteText').textContent = lastGeneratedInviteMessage;
+      document.getElementById('generatedInviteBox').classList.remove('hidden');
+
+      document.getElementById('newInviteLogin').value = '';
+      document.getElementById('newInvitePass').value = '';
+      document.getElementById('newInviteLabel').value = '';
+
+      hapticSuccess();
+      renderAuthorizedUsersList();
+      showToast('Foydalanuvchi va kalit yaratildi');
+    }
+
+    function copyGeneratedInvite() {
+      if (!lastGeneratedInviteMessage) return;
+      const ta = document.createElement('textarea');
+      ta.value = lastGeneratedInviteMessage;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      hapticSuccess();
+      showToast('Nusxalandi! Endi Telegram’dan yuboring');
+    }
+
+    function copyUserInviteByLogin(login) {
+      const u = authUsers.find(x => x.login === login);
+      if (!u) return;
+      const key = u.accessKey || buildAccessKey(u.login, u.password, u.displayName);
+      const msg =
+        `🔐 IU Spent AI — Shaxsiy kirish ruxsati\n` +
+        `👤 Login: ${u.login}\n` +
+        `🔑 Parol: ${u.password}\n` +
+        `🎫 Kalit: ${key}`;
+      const ta = document.createElement('textarea');
+      ta.value = msg;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      hapticSuccess();
+      showToast('Ma’lumotlar nusxalandi');
+    }
+
+    function toggleRevokeUser(login) {
+      if (currentUser?.role !== 'admin') return;
+      authUsers = loadAuthRegistry();
+      const u = authUsers.find(x => x.login === login);
+      if (!u || u.role === 'admin') return;
+      u.revoked = !u.revoked;
+      saveAuthRegistry(authUsers);
+      hapticLight();
+      renderAuthorizedUsersList();
+      showToast(u.revoked ? 'Foydalanuvchi bloklandi' : 'Ruxsat qayta tiklandi');
+    }
+
+    function removeAuthorizedUser(login) {
+      if (currentUser?.role !== 'admin') return;
+      authUsers = loadAuthRegistry().filter(x => x.login !== login || x.role === 'admin');
+      saveAuthRegistry(authUsers);
+      hapticLight();
+      renderAuthorizedUsersList();
+      showToast('Foydalanuvchi o‘chirildi');
+    }
+
+    function renderAuthorizedUsersList() {
+      const container = document.getElementById('authorizedUsersList');
+      authUsers = loadAuthRegistry();
+      const nonAdmins = authUsers.filter(u => u.role !== 'admin');
+
+      if (nonAdmins.length === 0) {
+        container.innerHTML = `<p class="text-xs text-gray-500 bg-[#070B09] border border-white/5 rounded-xl p-3 text-center">Hozircha faqat siz (Admin) ro‘yxatdasiz</p>`;
+        return;
+      }
+
+      container.innerHTML = nonAdmins.map(u => `
+        <div class="rounded-2xl bg-[#070B09] border border-white/10 p-3 flex items-center justify-between gap-2">
+          <div class="min-w-0">
+            <div class="flex items-center gap-1.5">
+              <span class="text-xs font-bold text-white truncate">${escapeHtml(u.displayName)}</span>
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold ${u.revoked ? 'bg-rose-500/20 text-rose-400' : 'bg-emerald-500/15 text-emerald-400'}">
+                ${u.revoked ? 'Bloklangan' : 'Faol'}
+              </span>
+            </div>
+            <div class="text-[11px] text-gray-400 font-mono mt-0.5">Login: ${escapeHtml(u.login)} • Parol: ${escapeHtml(u.password)}</div>
+          </div>
+          <div class="flex items-center gap-1 shrink-0">
+            <button onclick="copyUserInviteByLogin('${u.login}')" title="Nusxalash" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-emerald-400 flex items-center justify-center">
+              <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+            </button>
+            <button onclick="toggleRevokeUser('${u.login}')" title="Bloklash/Ochish" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-amber-400 flex items-center justify-center">
+              <i data-lucide="${u.revoked ? 'unlock' : 'ban'}" class="w-3.5 h-3.5"></i>
+            </button>
+            <button onclick="removeAuthorizedUser('${u.login}')" title="O‘chirish" class="w-8 h-8 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 flex items-center justify-center">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        </div>`).join('');
+      lucide.createIcons();
+    }
+
+    function updateOwnCredentials() {
+      const nextLogin = document.getElementById('editOwnLoginInput').value.trim().toLowerCase();
+      const nextPass = document.getElementById('editOwnPassInput').value.trim();
+
+      if (!nextLogin || !nextPass) {
+        showToast('Yangi login va parolni kiriting', true);
+        return;
+      }
+
+      authUsers = loadAuthRegistry();
+      if (nextLogin !== currentUser.login && authUsers.some(u => u.login === nextLogin)) {
+        showToast('Bu login band', true);
+        return;
+      }
+
+      const oldKey = getUserStorageKey(currentUser.login);
+      const idx = authUsers.findIndex(u => u.login === currentUser.login);
+      if (idx >= 0) {
+        authUsers[idx].login = nextLogin;
+        authUsers[idx].password = nextPass;
+        saveAuthRegistry(authUsers);
+        currentUser = authUsers[idx];
+      }
+
+      localStorage.setItem(getUserStorageKey(nextLogin), JSON.stringify(state));
+      if (oldKey !== getUserStorageKey(nextLogin)) {
+        localStorage.removeItem(oldKey);
+      }
+      localStorage.setItem(ACTIVE_SESSION_KEY, nextLogin);
+
+      document.getElementById('editOwnLoginInput').value = '';
+      document.getElementById('editOwnPassInput').value = '';
+      hapticSuccess();
+      renderHeader();
+      showToast('Login va parol yangilandi');
+    }
+
+    // 8. Strict Smart Uzbek & Russian AI Categorization Engine
+    // Produces & Groceries ("Uyga bozorlik") vs Prepared Meals/Drinks ("Ovqat")
+    const GROCERY_PRODUCE_KEYWORDS = [
+      // Sabzavotlar (Vegetables)
+      'sabzi', 'piyoz', 'kartoshka', 'pomidor', 'bodring', 'karam', 'sarimsoq', 'chesnok',
+      'ko‘kat', 'kokat', 'ukrop', 'petrushka', 'kashnich', 'rayhon', 'sholg‘om', 'sholgom',
+      'turp', 'rediska', 'qovoq', 'qovoqcha', 'baqlajon', 'bulg‘or', 'bulgor', 'qalampir',
+      'lavlagi', 'ismaloq', 'no‘xat', 'noxat', 'loviya', 'mosh', 'yasmiq', 'qo‘ziqorin', 'qoziqorin',
+      'морковь', 'лук', 'картошка', 'картофель', 'помидор', 'огурец', 'огурцы', 'капуста',
+      'чеснок', 'зелень', 'укроп', 'петрушка', 'редис', 'тыква', 'баклажан', 'перец', 'свекла',
+      // Mevalar & Poliz ekinlari (Fruits & Melons)
+      'olma', 'banan', 'uzum', 'anor', 'tarvuz', 'qovun', 'mandarin', 'apelsin', 'limon',
+      'nok', 'shaftoli', 'o‘rik', 'orik', 'gilos', 'olcha', 'qulupnay', 'malina', 'xurmo',
+      'kivi', 'ananas', 'anjir', 'behi', 'olxo‘ri', 'olxori', 'yong‘oq', 'yongʻoq', 'yongoq',
+      'bodom', 'pista', 'mayiz', 'turshak', 'meva', 'sabzavot', 'bozorlik', 'ro‘zg‘or', 'rozgor',
+      'яблоко', 'яблоки', 'банан', 'виноград', 'гранат', 'арбуз', 'дыня', 'мандарин', 'апельсин',
+      'лимон', 'груша', 'персик', 'абрикос', 'черешня', 'вишня', 'клубника', 'малина', 'хурма',
+      'киви', 'ананас', 'инжир', 'айва', 'слива', 'орех', 'изюм', 'фрукты', 'овощи', 'продукты',
+      // Uyga olinadigan asosiy oziq-ovqat mahsulotlari (Raw Household Staples)
+      'go‘sht', 'gosht', 'mol go‘shti', 'qo‘y go‘shti', 'tovuq', 'qiyma', 'baliq', 'kolbasa', 'sosiska',
+      'tuxum', 'non', 'patir', 'lepyoshka', 'un', 'yog‘', 'yog', 'o‘simlik yog‘i', 'sariyog‘', 'sariyog',
+      'guruch', 'shakar', 'tuz', 'makaron', 'spagetti', 'grechka', 'marjumak', 'suli', 'gerkules',
+      'sut', 'qatiq', 'tvorog', 'pishloq', 'sir', 'qaymoq', 'smetana', 'kefir', 'suzma', 'qurt',
+      'quruq choy', 'ko‘k choy', 'qora choy', 'qahva donasi', 'asal', 'murabbo', 'tomat', 'mayonez',
+      'мясо', 'говядина', 'баранина', 'курица', 'фарш', 'рыба', 'яйца', 'яйцо', 'хлеб', 'лепешка',
+      'мука', 'масло', 'рис', 'сахар', 'соль', 'макароны', 'гречка', 'молоко', 'кефир', 'творог',
+      'сыр', 'сметана', 'мед', 'крупа'
+    ];
+
+    const PREPARED_FOOD_DRINK_KEYWORDS = [
+      // Tayyor taomlar, kafe, restoran, fast-fud
+      'osh', 'palov', 'shashlik', 'kabob', 'lavash', 'shaurma', 'donar', 'burger', 'gamburger',
+      'pitsa', 'pizza', 'somsa', 'manti', 'xonim', 'lag‘mon', 'lagmon', 'sho‘rva', 'shorva',
+      'mastava', 'norin', 'qozonkabob', 'bifshteks', 'steyk', 'hot-dog', 'hotdog', 'sendvich',
+      'tushlik', 'kechki ovqat', 'nonushta', 'obed', 'ujin', 'zavtrak', 'ovqat', 'taom',
+      'kafe', 'restoran', 'choyxona', 'oshxona', 'kfc', 'evos', 'oqtepa', 'max way', 'wendys',
+      'плов', 'шашлык', 'лаваш', 'шаурма', 'бургер', 'пицца', 'самса', 'манты', 'лагман', 'суп',
+      'обед', 'ужин', 'завтрак', 'еда', 'кафе', 'ресторан', 'столовая',
+      // Tayyor ichimliklar va shirinlik/yeguliklar (Drinks & Snacks - NEVER Uyga bozorlik)
+      'kofe', 'kapuchino', 'latte', 'amerikano', 'espresso', 'cola', 'koka-kola', 'pepsi',
+      'fanta', 'sprite', 'suv', 'gazli suv', 'sok', 'sharbat', 'mors', 'kompot', 'ayron',
+      'energetik', 'flash', 'red bull', 'gorilla', 'adrenalin', 'shokolad', 'muzqaymoq',
+      'chips', 'suharik', 'tort', 'pirojnoye', 'pechenye', 'vafli', 'konfet', 'bulochka', 'kruassan',
+      'кофе', 'капучино', 'латте', 'кола', 'пепси', 'фанта', 'вода', 'сок', 'напиток',
+      'энергетик', 'шоколад', 'мороженое', 'чипсы', 'торт', 'печенье', 'конфеты', 'булочка'
+    ];
+
+    function matchesAnyKeyword(textLower, keywords) {
+      return keywords.some(kw => {
+        const escaped = kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(`(^|[^a-zA-Zа-яА-ЯёЁ‘'ʻ])${escaped}($|[^a-zA-Zа-яА-ЯёЁ‘'ʻ])`, 'i');
+        return regex.test(textLower);
+      });
+    }
+
+    function parseSmartFinanceText(rawText) {
+      const text = rawText.trim();
+      const lower = text.toLowerCase();
+      const isUSD = /(\$|usd|dollar|доллар|бакс)/i.test(lower);
+
+      let amount = 0;
+      const numRegex = /(\d+(?:[.,]\d+)?)\s*(mln|million|млн|ming|тыс|k\b)?/gi;
+      let match;
+      while ((match = numRegex.exec(lower)) !== null) {
+        let val = parseFloat(match[1].replace(',', '.'));
+        const mult = (match[2] || '').toLowerCase();
+        if (mult === 'mln' || mult === 'million' || mult === 'млн') val *= 1000000;
+        else if (mult === 'ming' || mult === 'тыс' || mult === 'k') val *= 1000;
+        if (val > amount) amount = val;
+      }
+
+      if (amount <= 0) return null;
+      const amountUZS = isUSD ? Math.round(amount * state.exchangeRate) : Math.round(amount);
+
+      let type = 'expense';
+      let category = 'Boshqa';
+
+      // 1. Debt & Income checks first
+      if (/(qarz\s*oldim|qarzga\s*oldim|взял\s*в\s*долг|занял)/i.test(lower)) {
+        type = 'income';
+        category = 'Qarz oldim';
+      } else if (/(qarz\s*berdim|qarzga\s*berdim|qarz\s*qaytardim|qarzni\s*qaytardim|дал\s*в\s*долг|вернул\s*долг)/i.test(lower)) {
+        type = 'expense';
+        category = 'Qarz berdim';
+      } else if (/(oylik|maosh|avans|зарплата|аванс)/i.test(lower)) {
+        type = 'income';
+        category = 'Maosh';
+      } else if (/(biznes|frilans|mijoz|savdo|foyda|доход|прибыль|фриланс)/i.test(lower)) {
+        type = 'income';
+        category = 'Biznes / Frilans';
+      } else if (/(keshbek|cashback|bonus|sovg‘a|sovga|кешбэк|бонус)/i.test(lower)) {
+        type = 'income';
+        category = 'Keshbek';
+      } else if (/(tushdi|keldi|o‘tkazma|otkazma|перевод|пришло)/i.test(lower)) {
+        type = 'income';
+        category = 'O‘tkazma';
+      } else {
+        // 2. Expense categorization with strict separation between Prepared Food/Drinks & Groceries
+        type = 'expense';
+        if (matchesAnyKeyword(lower, PREPARED_FOOD_DRINK_KEYWORDS)) {
+          category = 'Ovqat';
+        } else if (matchesAnyKeyword(lower, GROCERY_PRODUCE_KEYWORDS)) {
+          category = 'Uyga bozorlik';
+        } else if (/(taksi|yandex|metro|avtobus|benzin|propan|metan|yo‘l|yol|такси|метро|бензин)/i.test(lower)) {
+          category = 'Transport';
+        } else if (/(kiyim|krossovka|do‘kon|dokon|korzinka|havas|makro|bozor|telefon|xarid|одежда|магазин|покупка)/i.test(lower)) {
+          category = 'Xaridlar';
+        } else if (/(ijara|kvartira|svet|elektr|gaz|suv|internet|wifi|kommunal|аренда|свет|газ|интернет)/i.test(lower)) {
+          category = 'Uy-joy';
+        } else if (/(dori|apteka|shifokor|doktor|tish|klinika|лекарство|аптека|врач)/i.test(lower)) {
+          category = 'Salomatlik';
+        } else if (/(kino|o‘yin|oyin|konsert|bog‘|bog|dam|кино|игра|отдых)/i.test(lower)) {
+          category = 'Ko‘ngilochar';
+        }
+      }
+
+      let cleanTitle = text
+        .replace(/(\d+(?:[.,]\d+)?)\s*(mln|million|млн|ming|тыс|k\b|so‘m|som|sum|uzs|\$|usd|dollar|доллар)?/gi, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+      if (!cleanTitle) cleanTitle = category;
+      else cleanTitle = cleanTitle.charAt(0).toUpperCase() + cleanTitle.slice(1);
+
+      return { type, category, amountUZS, title: cleanTitle };
+    }
+
+    // 9. Formatting & UI Helpers
+    function formatMoney(uzsAmount, showPlus = false, isNegative = false) {
+      const prefix = showPlus ? '+' : (isNegative ? '-' : '');
+      if (state.currency === 'USD') {
+        const usd = Math.abs(uzsAmount) / state.exchangeRate;
+        return `${prefix}$${usd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      }
+      return `${prefix}${Math.round(Math.abs(uzsAmount)).toLocaleString('en-US')} so‘m`;
+    }
+
+    function showToast(msg, isError = false) {
+      const box = document.getElementById('toastBox');
+      const inner = document.getElementById('toastInner');
+      const text = document.getElementById('toastText');
+      text.textContent = msg;
+      inner.className = isError
+        ? 'px-4 py-2.5 rounded-2xl bg-[#241317] border border-rose-500/40 shadow-2xl flex items-center gap-2 text-xs font-semibold text-rose-200 whitespace-nowrap'
+        : 'px-4 py-2.5 rounded-2xl bg-[#13221B] border border-emerald-500/35 shadow-2xl flex items-center gap-2 text-xs font-semibold text-white whitespace-nowrap';
+      box.classList.remove('opacity-0');
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => box.classList.add('opacity-0'), 2500);
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // 10. Transactions CRUD
+    function addTransaction({ type, category, amountUZS, title, source }) {
+      const now = new Date();
+      state.transactions.unshift({
+        id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+        type,
+        category,
+        amountUZS: Math.round(amountUZS),
+        title: title || category,
+        source: source || 'Qo‘lda',
+        date: now.toISOString().slice(0, 10),
+        time: now.toTimeString().slice(0, 5)
+      });
+      saveUserState();
+      hapticSuccess();
+      renderAll();
+      showToast(`${type === 'income' ? 'Daromad' : category} qo‘shildi`);
+    }
+
+    function deleteTransaction(id) {
+      hapticLight();
+      state.transactions = state.transactions.filter(t => t.id !== id);
+      saveUserState();
+      renderAll();
+      showToast('O‘chirildi');
+    }
+
+    function handleQuickTextSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('aiQuickInput');
+      const raw = input.value.trim();
+      if (!raw) return;
+
+      const parsed = parseSmartFinanceText(raw);
+      if (!parsed) {
+        showToast('Summani ham kiriting (masalan: 55 ming)', true);
+        return;
+      }
+      addTransaction({ ...parsed, source: 'AI Text' });
+      input.value = '';
+    }
+
+    function toggleCurrency() {
+      hapticLight();
+      state.currency = state.currency === 'UZS' ? 'USD' : 'UZS';
+      saveUserState();
+      renderAll();
+    }
+
+    function setTypeFilter(type) {
+      hapticLight();
+      typeFilter = type;
+      categoryFilter = 'Barchasi';
+      ['all', 'expense', 'income'].forEach(t => {
+        document.getElementById(`typeTab-${t}`).className = t === type
+          ? 'py-2 rounded-xl text-xs font-semibold bg-emerald-500 text-[#070B09] transition'
+          : 'py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white transition';
+      });
+      renderCategoryPills();
+      renderTransactions();
+    }
+
+    function setCategoryFilter(cat) {
+      hapticLight();
+      categoryFilter = cat;
+      renderCategoryPills();
+      renderTransactions();
+    }
+
+    // 11. Render Functions
+    function renderHeader() {
+      if (!currentUser || !state) return;
+      const now = new Date();
+      document.getElementById('headerMonthTitle').textContent = `${UZ_MONTHS[now.getMonth()]} ${now.getFullYear()}`;
+      document.getElementById('headerCurrencyLabel').textContent = state.currency;
+
+      const isAdmin = currentUser.role === 'admin';
+      document.getElementById('headerUserName').textContent = currentUser.displayName;
+      document.getElementById('headerRoleIcon').innerHTML = isAdmin
+        ? '<i data-lucide="crown" class="w-3.5 h-3.5 text-amber-400"></i>'
+        : '<i data-lucide="user-check" class="w-3.5 h-3.5 text-emerald-400"></i>';
+
+      const initials = currentUser.displayName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || 'IU';
+      document.getElementById('settingsAvatar').textContent = initials;
+      document.getElementById('settingsDisplayName').textContent = currentUser.displayName;
+      document.getElementById('settingsLoginLabel').textContent = `Login: ${currentUser.login}`;
+      document.getElementById('settingsRoleBadge').textContent = isAdmin ? 'Admin' : 'Foydalanuvchi';
+      document.getElementById('adminPanelCard').classList.toggle('hidden', !isAdmin);
+      if (isAdmin) renderAuthorizedUsersList();
+
+      document.getElementById('rateInput').value = state.exchangeRate;
+      document.getElementById('rateBadge').textContent = `1 USD = ${state.exchangeRate.toLocaleString('en-US')} UZS`;
+    }
+
+    function renderBalanceCard() {
+      let totalIncome = 0, totalExpense = 0;
+      state.transactions.forEach(t => {
+        if (t.type === 'income') totalIncome += t.amountUZS;
+        else totalExpense += t.amountUZS;
+      });
+      const balance = totalIncome - totalExpense;
+      const balEl = document.getElementById('balanceDisplay');
+
+      if (state.currency === 'USD') {
+        const usdBal = balance / state.exchangeRate;
+        const sign = usdBal < 0 ? '-' : '';
+        balEl.innerHTML = `${sign}$${Math.abs(usdBal).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} <span class="text-base font-semibold text-emerald-400">USD</span>`;
+      } else {
+        const sign = balance < 0 ? '-' : '';
+        balEl.innerHTML = `${sign}${Math.round(Math.abs(balance)).toLocaleString('en-US')} <span class="text-base font-semibold text-emerald-400">so‘m</span>`;
+      }
+
+      document.getElementById('totalIncomeDisplay').textContent = formatMoney(totalIncome, true, false);
+      document.getElementById('totalExpenseDisplay').textContent = formatMoney(totalExpense, false, true);
+    }
+
+    function renderCategoryPills() {
+      const bar = document.getElementById('categoryFilterBar');
+      let list = ['Barchasi'];
+      if (typeFilter === 'expense') {
+        list = list.concat(EXPENSE_CATEGORIES.map(c => c.name));
+      } else if (typeFilter === 'income') {
+        list = list.concat(INCOME_CATEGORIES.map(c => c.name));
+      } else {
+        const uniqueNames = [...new Set(ALL_CATEGORIES.map(c => c.name))];
+        list = list.concat(uniqueNames);
+      }
+
+      bar.innerHTML = list.map(cat => {
+        const active = categoryFilter === cat;
+        return `<button onclick="setCategoryFilter('${cat.replace(/'/g, "\\'")}')" class="px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 transition ${
+          active
+            ? 'bg-emerald-500 text-[#070B09]'
+            : 'bg-[#0F1713] border border-white/10 text-gray-300 hover:text-white'
+        }">${cat}</button>`;
+      }).join('');
+    }
+
+    function getCategoryMeta(catName, type) {
+      const found = ALL_CATEGORIES.find(c => c.name === catName);
+      if (found) return found;
+      return type === 'income'
+        ? { name: catName, icon: 'plus-circle', color: '#10B981' }
+        : { name: catName, icon: 'layers', color: '#6B7280' };
+    }
+
+    function renderTransactions() {
+      const container = document.getElementById('transactionsContainer');
+      const filtered = state.transactions.filter(t => {
+        if (typeFilter !== 'all' && t.type !== typeFilter) return false;
+        if (categoryFilter !== 'Barchasi' && t.category !== categoryFilter) return false;
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="rounded-3xl bg-[#0F1713] border border-white/5 py-12 px-4 text-center">
+            <div class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center mx-auto mb-3 text-gray-500">
+              <i data-lucide="inbox" class="w-6 h-6"></i>
+            </div>
+            <p class="text-sm font-semibold text-gray-300">Hozircha ma’lumotlar yo‘q</p>
+            <p class="text-xs text-gray-500 mt-1">Yuqoridan yozing yoki pastdagi mikrofonni bosing</p>
+          </div>`;
+        lucide.createIcons();
+        return;
+      }
+
+      const groups = {};
+      const todayStr = new Date().toISOString().slice(0, 10);
+      filtered.forEach(t => {
+        if (!groups[t.date]) groups[t.date] = [];
+        groups[t.date].push(t);
+      });
+
+      container.innerHTML = Object.entries(groups).map(([dateStr, items]) => {
+        const dayNet = items.reduce((acc, item) => acc + (item.type === 'income' ? item.amountUZS : -item.amountUZS), 0);
+        const dayLabel = dateStr === todayStr ? 'Bugun' : dateStr;
+        const dayNetStr = dayNet >= 0 ? formatMoney(dayNet, true, false) : formatMoney(dayNet, false, true);
+
+        const rowsHtml = items.map(t => {
+          const meta = getCategoryMeta(t.category, t.type);
+          const isInc = t.type === 'income';
+          const amountText = isInc ? formatMoney(t.amountUZS, true, false) : formatMoney(t.amountUZS, false, true);
+
+          return `
+            <div class="rounded-2xl bg-[#0F1713] border border-white/5 hover:border-white/15 p-3 flex items-center justify-between gap-2 transition">
+              <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style="background-color: ${meta.color}20; color: ${meta.color};">
+                  <i data-lucide="${meta.icon}" class="w-5 h-5"></i>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="text-sm font-semibold text-white truncate">${escapeHtml(t.title)}</div>
+                  <div class="flex items-center gap-1.5 mt-0.5 text-[11px] text-gray-400">
+                    <span class="truncate">${escapeHtml(t.category)}</span>
+                    <span class="shrink-0">•</span>
+                    <span class="shrink-0">${t.time}</span>
+                    <span class="px-1.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 text-[10px] font-semibold whitespace-nowrap shrink-0">${escapeHtml(t.source)}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-1.5 shrink-0">
+                <span class="text-xs sm:text-sm font-bold whitespace-nowrap shrink-0 ${isInc ? 'text-emerald-400' : 'text-white'}">${amountText}</span>
+                <button onclick="deleteTransaction('${t.id}')" aria-label="O‘chirish" class="w-7 h-7 rounded-lg text-gray-500 hover:text-rose-400 hover:bg-rose-500/10 active:scale-90 transition flex items-center justify-center shrink-0">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>`;
+        }).join('');
+
+        return `
+          <div class="space-y-2">
+            <div class="flex items-center justify-between px-1 text-xs">
+              <span class="font-semibold text-gray-400">${dayLabel}</span>
+              <span class="font-bold ${dayNet >= 0 ? 'text-emerald-400' : 'text-gray-400'} whitespace-nowrap">${dayNetStr}</span>
+            </div>
+            <div class="space-y-2">${rowsHtml}</div>
+          </div>`;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    // 12. Statistics & Calendar
+    function setChartMode(mode) {
+      hapticLight();
+      chartMode = mode;
+      document.getElementById('chartMode-expense').className = mode === 'expense'
+        ? 'px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-emerald-500 text-[#070B09] transition'
+        : 'px-2.5 py-1 rounded-lg text-[11px] font-semibold text-gray-400 transition';
+      document.getElementById('chartMode-income').className = mode === 'income'
+        ? 'px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-emerald-500 text-[#070B09] transition'
+        : 'px-2.5 py-1 rounded-lg text-[11px] font-semibold text-gray-400 transition';
+      renderStatsTab();
+    }
+
+    function renderStatsTab() {
+      const items = state.transactions.filter(t => t.type === chartMode);
+      const totalsByCat = {};
+      let grandTotal = 0;
+
+      items.forEach(t => {
+        totalsByCat[t.category] = (totalsByCat[t.category] || 0) + t.amountUZS;
+        grandTotal += t.amountUZS;
+      });
+
+      const sorted = Object.entries(totalsByCat).sort((a, b) => b[1] - a[1]);
+      const canvas = document.getElementById('categoryDoughnutChart');
+      const emptyEl = document.getElementById('chartEmptyState');
+      const legendEl = document.getElementById('chartLegendList');
+
+      if (doughnutChartInstance) {
+        doughnutChartInstance.destroy();
+        doughnutChartInstance = null;
+      }
+
+      if (sorted.length === 0) {
+        canvas.classList.add('hidden');
+        emptyEl.classList.remove('hidden');
+        legendEl.innerHTML = '';
+      } else {
+        canvas.classList.remove('hidden');
+        emptyEl.classList.add('hidden');
+
+        doughnutChartInstance = new Chart(canvas.getContext('2d'), {
+          type: 'doughnut',
+          data: {
+            labels: sorted.map(([cat]) => cat),
+            datasets: [{
+              data: sorted.map(([, val]) => state.currency === 'USD' ? +(val / state.exchangeRate).toFixed(2) : val),
+              backgroundColor: sorted.map(([cat]) => getCategoryMeta(cat, chartMode).color),
+              borderColor: '#0F1713',
+              borderWidth: 3
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '68%',
+            plugins: { legend: { display: false } }
+          }
+        });
+
+        legendEl.innerHTML = sorted.map(([cat, val]) => {
+          const pct = grandTotal > 0 ? Math.round((val / grandTotal) * 100) : 0;
+          const color = getCategoryMeta(cat, chartMode).color;
+          return `
+            <div class="flex items-center justify-between text-xs py-1">
+              <div class="flex items-center gap-2 min-w-0">
+                <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background:${color}"></span>
+                <span class="text-gray-200 font-medium truncate">${cat}</span>
+                <span class="text-gray-500 text-[11px]">${pct}%</span>
+              </div>
+              <span class="font-bold text-white whitespace-nowrap shrink-0">${formatMoney(val)}</span>
+            </div>`;
+        }).join('');
+      }
+
+      renderCalendar();
+    }
+
+    function renderCalendar() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = now.getMonth();
+      document.getElementById('calendarMonthLabel').textContent = `${UZ_MONTHS[month]} ${year}`;
+
+      const firstDay = new Date(year, month, 1).getDay();
+      const startOffset = firstDay === 0 ? 6 : firstDay - 1;
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      const dayTotals = {};
+      state.transactions.forEach(t => {
+        if (!dayTotals[t.date]) dayTotals[t.date] = { inc: 0, exp: 0 };
+        if (t.type === 'income') dayTotals[t.date].inc += t.amountUZS;
+        else dayTotals[t.date].exp += t.amountUZS;
+      });
+
+      let cellsHtml = '';
+      for (let i = 0; i < startOffset; i++) cellsHtml += `<div></div>`;
+
+      for (let d = 1; d <= daysInMonth; d++) {
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        const info = dayTotals[dateStr];
+        const isSelected = selectedCalendarDay === dateStr;
+        const dotHtml = info
+          ? `<div class="flex items-center justify-center gap-0.5 mt-0.5">
+              ${info.inc > 0 ? '<span class="w-1 h-1 rounded-full bg-emerald-400"></span>' : ''}
+              ${info.exp > 0 ? '<span class="w-1 h-1 rounded-full bg-rose-400"></span>' : ''}
+            </div>`
+          : '';
+
+        cellsHtml += `
+          <button onclick="selectCalendarDay('${dateStr}')" class="h-10 rounded-xl flex flex-col items-center justify-center text-xs font-semibold transition ${
+            isSelected
+              ? 'bg-emerald-500 text-[#070B09]'
+              : info
+                ? 'bg-[#15201B] text-white border border-white/10'
+                : 'bg-[#070B09]/60 text-gray-400'
+          }">
+            <span>${d}</span>
+            ${dotHtml}
+          </button>`;
+      }
+
+      document.getElementById('calendarGrid').innerHTML = cellsHtml;
+
+      const dayItems = state.transactions.filter(t => t.date === selectedCalendarDay);
+      const detailsEl = document.getElementById('selectedDayDetails');
+      if (dayItems.length === 0) {
+        detailsEl.innerHTML = `<p class="text-xs text-gray-500 text-center py-2">${selectedCalendarDay} sanasida amaliyotlar yo‘q</p>`;
+      } else {
+        detailsEl.innerHTML = `
+          <div class="text-xs font-semibold text-gray-400 mb-2">${selectedCalendarDay} amaliyotlari (${dayItems.length})</div>
+          <div class="space-y-1.5">
+            ${dayItems.map(t => `
+              <div class="flex items-center justify-between text-xs py-1">
+                <span class="text-gray-200 truncate pr-2">${escapeHtml(t.title)}</span>
+                <span class="font-bold whitespace-nowrap ${t.type === 'income' ? 'text-emerald-400' : 'text-rose-400'}">
+                  ${t.type === 'income' ? formatMoney(t.amountUZS, true, false) : formatMoney(t.amountUZS, false, true)}
+                </span>
+              </div>`).join('')}
+          </div>`;
+      }
+    }
+
+    function selectCalendarDay(dateStr) {
+      hapticLight();
+      selectedCalendarDay = dateStr;
+      renderCalendar();
+    }
+
+    // 13. Budget Tab
+    function renderBudgetTab() {
+      const currentMonthPrefix = new Date().toISOString().slice(0, 7);
+      const spentByCat = {};
+      state.transactions.forEach(t => {
+        if (t.type === 'expense' && t.date.startsWith(currentMonthPrefix)) {
+          spentByCat[t.category] = (spentByCat[t.category] || 0) + t.amountUZS;
+        }
+      });
+
+      let totalBudget = 0, totalSpent = 0;
+
+      const listHtml = EXPENSE_CATEGORIES.map(cat => {
+        const limit = Number(state.budgets[cat.name]) || 0;
+        const spent = spentByCat[cat.name] || 0;
+        totalBudget += limit;
+        totalSpent += spent;
+
+        const pct = limit > 0 ? Math.min(100, Math.round((spent / limit) * 100)) : 0;
+        const isOver = limit > 0 && spent > limit;
+        const barColor = isOver ? 'bg-rose-500' : pct > 80 ? 'bg-amber-400' : 'bg-emerald-500';
+
+        return `
+          <div class="rounded-2xl bg-[#0F1713] border border-white/10 p-3.5">
+            <div class="flex items-center justify-between gap-2 mb-2">
+              <div class="flex items-center gap-2 min-w-0">
+                <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0" style="background:${cat.color}20; color:${cat.color}">
+                  <i data-lucide="${cat.icon}" class="w-4 h-4"></i>
+                </div>
+                <span class="text-sm font-semibold text-white truncate">${cat.name}</span>
+              </div>
+              <span class="text-xs font-bold whitespace-nowrap ${isOver ? 'text-rose-400' : 'text-gray-300'}">${pct}%</span>
+            </div>
+            <div class="text-xs text-gray-400 mb-2">${formatMoney(spent)} / ${formatMoney(limit)}</div>
+            <div class="w-full h-2 rounded-full bg-[#070B09] overflow-hidden">
+              <div class="h-full ${barColor} rounded-full transition-all duration-300" style="width:${pct}%"></div>
+            </div>
+          </div>`;
+      }).join('');
+
+      const overallPct = totalBudget > 0 ? Math.min(100, Math.round((totalSpent / totalBudget) * 100)) : 0;
+      document.getElementById('overallBudgetPercent').textContent = `${overallPct}%`;
+      document.getElementById('overallBudgetAmounts').textContent = `${formatMoney(totalSpent)} / ${formatMoney(totalBudget)}`;
+      document.getElementById('overallBudgetBar').style.width = `${overallPct}%`;
+      document.getElementById('budgetCategoriesList').innerHTML = listHtml;
+      lucide.createIcons();
+    }
+
+    function openBudgetModal() {
+      hapticLight();
+      document.getElementById('budgetEditorInputs').innerHTML = EXPENSE_CATEGORIES.map(cat => `
+        <div class="flex items-center justify-between gap-3 bg-[#070B09] border border-white/10 rounded-xl px-3 py-2">
+          <span class="text-xs font-semibold text-gray-200 truncate">${cat.name}</span>
+          <input data-budget-cat="${cat.name}" type="number" inputmode="numeric" value="${state.budgets[cat.name] || 0}" class="w-32 h-8 px-2.5 rounded-lg bg-[#0F1713] border border-white/10 text-right text-xs font-bold text-white focus:outline-none focus:border-emerald-500" />
+        </div>`).join('');
+      openModal('modal-budget');
+    }
+
+    function saveBudgetLimits() {
+      document.querySelectorAll('[data-budget-cat]').forEach(inp => {
+        const cat = inp.getAttribute('data-budget-cat');
+        state.budgets[cat] = Math.max(0, Number(inp.value) || 0);
+      });
+      saveUserState();
+      hapticSuccess();
+      closeAllModals();
+      renderBudgetTab();
+      showToast('Byudjet limitlari yangilandi');
+    }
+
+    // 14. Calculator Modal
+    let calcType = 'expense', calcCurrency = 'UZS', calcRawDigits = '0', calcSelectedCategory = 'Uyga bozorlik';
+
+    function openCalculatorModal(defaultType = 'expense') {
+      hapticLight();
+      calcRawDigits = '0';
+      calcCurrency = state.currency;
+      document.getElementById('calcNoteInput').value = '';
+      document.getElementById('calcCurrencyBtn').textContent = calcCurrency;
+      updateCalcAmountDisplay();
+      setCalcType(defaultType);
+      openModal('modal-calculator');
+    }
+
+    function setCalcType(type) {
+      calcType = type;
+      document.getElementById('calcType-expense').className = type === 'expense'
+        ? 'py-1.5 rounded-lg text-xs font-bold bg-rose-500 text-white transition'
+        : 'py-1.5 rounded-lg text-xs font-bold text-gray-400 transition';
+      document.getElementById('calcType-income').className = type === 'income'
+        ? 'py-1.5 rounded-lg text-xs font-bold bg-emerald-500 text-[#070B09] transition'
+        : 'py-1.5 rounded-lg text-xs font-bold text-gray-400 transition';
+
+      const cats = type === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
+      calcSelectedCategory = cats[0].name;
+      renderCalcCategories();
+    }
+
+    function renderCalcCategories() {
+      const cats = calcType === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
+      document.getElementById('calcCategoryGrid').innerHTML = cats.map(c => {
+        const selected = calcSelectedCategory === c.name;
+        return `
+          <button onclick="selectCalcCategory('${c.name.replace(/'/g, "\\'")}')" class="p-2 rounded-xl border text-center flex flex-col items-center gap-1 transition ${
+            selected ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' : 'bg-[#070B09] border-white/5 text-gray-400'
+          }">
+            <i data-lucide="${c.icon}" class="w-4 h-4"></i>
+            <span class="text-[10px] font-semibold truncate w-full">${c.name}</span>
+          </button>`;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    function selectCalcCategory(catName) {
+      hapticLight();
+      calcSelectedCategory = catName;
+      renderCalcCategories();
+    }
+
+    function toggleCalcCurrency() {
+      hapticLight();
+      calcCurrency = calcCurrency === 'UZS' ? 'USD' : 'UZS';
+      document.getElementById('calcCurrencyBtn').textContent = calcCurrency;
+    }
+
+    function pressCalcKey(key) {
+      hapticLight();
+      if (key === 'del') {
+        calcRawDigits = calcRawDigits.length > 1 ? calcRawDigits.slice(0, -1) : '0';
+      } else if (calcRawDigits === '0') {
+        calcRawDigits = key === '000' ? '0' : key;
+      } else if (calcRawDigits.length < 11) {
+        calcRawDigits += key;
+      }
+      updateCalcAmountDisplay();
+    }
+
+    function updateCalcAmountDisplay() {
+      document.getElementById('calcAmountText').textContent = (Number(calcRawDigits) || 0).toLocaleString('en-US');
+    }
+
+    function saveCalcTransaction() {
+      const rawVal = Number(calcRawDigits) || 0;
+      if (rawVal <= 0) {
+        showToast('Summani kiriting', true);
+        return;
+      }
+      const amountUZS = calcCurrency === 'USD' ? Math.round(rawVal * state.exchangeRate) : rawVal;
+      const note = document.getElementById('calcNoteInput').value.trim();
+      addTransaction({
+        type: calcType,
+        category: calcSelectedCategory,
+        amountUZS,
+        title: note || calcSelectedCategory,
+        source: 'Qo‘lda'
+      });
+      closeAllModals();
+    }
+
+    // 15. Voice AI Modal
+    let speechRecognition = null, speechLang = 'uz-UZ';
+
+    function openVoiceModal() {
+      hapticLight();
+      document.getElementById('voiceTranscriptInput').value = '';
+      openModal('modal-voice');
+      startSpeechListening();
+    }
+
+    function setSpeechLang(lang) {
+      hapticLight();
+      speechLang = lang;
+      document.getElementById('langBtn-uz').className = lang === 'uz-UZ'
+        ? 'px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-500 text-[#070B09]'
+        : 'px-2.5 py-1 rounded-lg text-xs font-bold bg-white/5 text-gray-400';
+      document.getElementById('langBtn-ru').className = lang === 'ru-RU'
+        ? 'px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-500 text-[#070B09]'
+        : 'px-2.5 py-1 rounded-lg text-xs font-bold bg-white/5 text-gray-400';
+      startSpeechListening();
+    }
+
+    function startSpeechListening() {
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const statusEl = document.getElementById('voiceStatusLabel');
+      if (!SpeechRec) {
+        statusEl.textContent = 'Ovozli tanish mavjud emas — matn yozing';
+        return;
+      }
+      if (speechRecognition) { try { speechRecognition.stop(); } catch (e) {} }
+      speechRecognition = new SpeechRec();
+      speechRecognition.lang = speechLang;
+      speechRecognition.interimResults = true;
+      speechRecognition.maxAlternatives = 1;
+
+      statusEl.textContent = 'Tinglanmoqda... Gapiring';
+      speechRecognition.onresult = (event) => {
+        document.getElementById('voiceTranscriptInput').value = Array.from(event.results).map(r => r[0].transcript).join('');
+      };
+      speechRecognition.onerror = () => { statusEl.textContent = 'Mikrofon ruxsati berilmagan — matn kiriting'; };
+      speechRecognition.onend = () => { statusEl.textContent = 'Tayyor. Tekshirib «Qo‘shish» tugmasini bosing'; };
+      try { speechRecognition.start(); } catch (e) {}
+    }
+
+    function confirmVoiceEntry() {
+      if (speechRecognition) { try { speechRecognition.stop(); } catch (e) {} }
+      const raw = document.getElementById('voiceTranscriptInput').value.trim();
+      if (!raw) {
+        showToast('Matn bo‘sh', true);
+        return;
+      }
+      const parsed = parseSmartFinanceText(raw);
+      if (!parsed) {
+        showToast('Summani ham kiriting', true);
+        return;
+      }
+      addTransaction({ ...parsed, source: 'Ovozli AI' });
+      closeAllModals();
+    }
+
+    // 16. Receipt Scanner Modal
+    let scanType = 'expense';
+
+    function openScannerModal() {
+      hapticLight();
+      document.getElementById('receiptPreviewImg').classList.add('hidden');
+      document.getElementById('receiptUploadPlaceholder').classList.remove('hidden');
+      document.getElementById('scanAmountInput').value = '';
+      document.getElementById('scanNoteInput').value = '';
+      setScanType('expense');
+      openModal('modal-scanner');
+    }
+
+    function setScanType(type) {
+      scanType = type;
+      document.getElementById('scanType-expense').className = type === 'expense'
+        ? 'py-1.5 rounded-lg text-xs font-bold bg-rose-500 text-white transition'
+        : 'py-1.5 rounded-lg text-xs font-bold text-gray-400 transition';
+      document.getElementById('scanType-income').className = type === 'income'
+        ? 'py-1.5 rounded-lg text-xs font-bold bg-emerald-500 text-[#070B09] transition'
+        : 'py-1.5 rounded-lg text-xs font-bold text-gray-400 transition';
+
+      const cats = type === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
+      document.getElementById('scanCategorySelect').innerHTML = cats
+        .map(c => `<option value="${c.name}">${c.name}</option>`)
+        .join('');
+    }
+
+    function handleReceiptImageSelect(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = document.getElementById('receiptPreviewImg');
+        img.src = e.target.result;
+        img.classList.remove('hidden');
+        document.getElementById('receiptUploadPlaceholder').classList.add('hidden');
+        hapticSuccess();
+        showToast('Rasm yuklandi — summani tasdiqlang');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function saveScannedTransaction() {
+      const amt = Number(document.getElementById('scanAmountInput').value) || 0;
+      if (amt <= 0) {
+        showToast('Chek summasini kiriting', true);
+        return;
+      }
+      const cat = document.getElementById('scanCategorySelect').value;
+      const note = document.getElementById('scanNoteInput').value.trim();
+      addTransaction({
+        type: scanType,
+        category: cat,
+        amountUZS: Math.round(amt),
+        title: note || `${cat} (Chek)`,
+        source: 'Chek AI'
+      });
+      closeAllModals();
+    }
+
+    // 17. Rate, Export, Import & Clear
+    function saveExchangeRate() {
+      const val = Number(document.getElementById('rateInput').value);
+      if (!val || val < 100) {
+        showToast('To‘g‘ri kurs kiriting', true);
+        return;
+      }
+      state.exchangeRate = Math.round(val);
+      saveUserState();
+      hapticSuccess();
+      renderAll();
+      showToast('Dollar kursi saqlandi');
+    }
+
+    function openClearConfirmModal() {
+      hapticLight();
+      document.getElementById('dialogTitle').textContent = 'Barcha ma’lumotlarni o‘chirish';
+      document.getElementById('dialogDesc').textContent = 'Sizning barcha daromad va xarajatlar ro‘yxatingiz tozalanadi. Davom etasizmi?';
+      document.getElementById('dialogConfirmBtn').onclick = () => {
+        state.transactions = [];
+        saveUserState();
+        renderAll();
+        closeAllModals();
+        showToast('Barcha ma’lumotlar tozalandi');
+      };
+      openModal('modal-dialog');
+    }
+
+    function exportCSV() {
+      hapticLight();
+      const headers = ['Sana', 'Vaqt', 'Turi', 'Kategoriya', 'Izoh', 'Summa_UZS', 'Manba'];
+      const rows = state.transactions.map(t => [
+        t.date,
+        t.time,
+        t.type === 'income' ? 'Daromad' : 'Xarajat',
+        `"${t.category}"`,
+        `"${t.title.replace(/"/g, '""')}"`,
+        t.amountUZS,
+        `"${t.source}"`
+      ].join(','));
+
+      const csvContent = '\uFEFF' + [headers.join(','), ...rows].join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `IU_SpentAI_${currentUser.login}_${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('CSV fayl yuklandi');
+    }
+
+    function exportJSON() {
+      hapticLight();
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `IU_SpentAI_Backup_${currentUser.login}_${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('JSON Backup yuklandi');
+    }
+
+    function importJSON(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (Array.isArray(imported.transactions)) {
+            state = { ...state, ...imported };
+            saveUserState();
+            renderAll();
+            hapticSuccess();
+            showToast('Backup tiklandi');
+          } else {
+            showToast('Noto‘g‘ri fayl formati', true);
+          }
+        } catch (err) {
+          showToast('Faylni o‘qishda xatolik', true);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // 18. Tabs & Modals
+    function switchTab(tabName) {
+      hapticLight();
+      currentTab = tabName;
+      ['home', 'stats', 'budget', 'settings'].forEach(t => {
+        document.getElementById(`tab-${t}`).classList.toggle('hidden', t !== tabName);
+        document.getElementById(`nav-${t}`).className = t === tabName
+          ? 'flex flex-col items-center justify-center gap-1 text-emerald-400 transition'
+          : 'flex flex-col items-center justify-center gap-1 text-gray-500 transition';
+      });
+      if (tabName === 'stats') renderStatsTab();
+      if (tabName === 'budget') renderBudgetTab();
+      lucide.createIcons();
+    }
+
+    function openModal(modalId) {
+      document.getElementById(modalId).classList.remove('hidden');
+      try { tg?.BackButton?.show(); } catch (e) {}
+    }
+
+    function closeAllModals() {
+      ['modal-calculator', 'modal-voice', 'modal-scanner', 'modal-budget', 'modal-dialog'].forEach(id => {
+        document.getElementById(id).classList.add('hidden');
+      });
+      if (speechRecognition) { try { speechRecognition.stop(); } catch (e) {} }
+      try { tg?.BackButton?.hide(); } catch (e) {}
+    }
+
+    if (tg?.BackButton) {
+      tg.BackButton.onClick(() => closeAllModals());
+    }
+
+    function renderAll() {
+      renderHeader();
+      renderBalanceCard();
+      renderCategoryPills();
+      renderTransactions();
+      if (currentTab === 'stats') renderStatsTab();
+      if (currentTab === 'budget') renderBudgetTab();
+      lucide.createIcons();
+    }
+
+    window.onload = function () {
+      const savedSessionLogin = localStorage.getItem(ACTIVE_SESSION_KEY);
+      if (savedSessionLogin) {
+        authUsers = loadAuthRegistry();
+        const found = authUsers.find(u => u.login === savedSessionLogin && !u.revoked);
+        if (found) {
+          currentUser = found;
+          state = loadUserState(currentUser.login);
+          document.getElementById('loginScreen').classList.add('hidden');
+          document.getElementById('appShell').classList.remove('hidden');
+          renderAll();
+          return;
+        }
+      }
+      lucide.createIcons();
+    };
+  </script>
+</body>
+</html>
